@@ -16,16 +16,15 @@ The code and dataset provided in this repository correspond to the experiments r
 
 ```text
 .
-├── dataset/
-│   └── Zdataset/
-│       ├── herb_herb.csv
-│       ├── herb_disease.csv
-│       ├── herb_TCMsymptom.csv
-│       ├── herb_symptom.csv
-│       ├── target_drug.csv
-│       ├── target_disease.csv
-│       ├── target_symptom.csv
-│       └── target_herb.csv
+├── data/ 
+│     ├── herb_herb.csv
+│     ├── herb_disease.csv
+│     ├── herb_TCMsymptom.csv
+│     ├── herb_symptom.csv
+│     ├── target_drug.csv
+│     ├── target_disease.csv
+│     ├── target_symptom.csv
+│     └── target_herb.csv
 │
 ├── main.py
 ├── model.py
