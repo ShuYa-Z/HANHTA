@@ -108,6 +108,7 @@ The resulting scores are used to evaluate the predicted herb-target associations
 
 The overall workflow is:
 
+```text
 Zdataset
     │
     ▼
@@ -148,8 +149,7 @@ Compare predictions with held-out test associations
     │
     ▼
 Model evaluation
-
-
+```
 ---
 
 ## Baseline Methods
