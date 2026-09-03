@@ -73,15 +73,13 @@ Detailed information regarding data sources, preprocessing, and dataset construc
 
 ## Heterogeneous Graph Construction
 
-The heterogeneous graph contains multiple types of biomedical relationships on both the herb and target sides.
+The heterogeneous graph contains multiple types of relationships on both the herb and target sides.
 
 For herb-target association prediction, the implementation provides a control parameter, `include_herb_target`, for heterogeneous graph construction.
 
 When `include_herb_target` is enabled, herb-target and target-herb relations are included in the heterogeneous graph through the corresponding `htg` and `gth` relations.
 
-When evaluating held-out herb-target associations, the corresponding test associations are excluded from the graph used for model training. Thus, the held-out herb-target associations do not participate in the message-passing process through herb-target graph edges.
-
-This graph-construction mechanism is used to prevent the held-out herb-target associations from being directly incorporated into the heterogeneous graph during model training.
+During each evaluation, training herb-target associations are included in the heterogeneous graph and used for node embedding. Held-out test herb-target associations are excluded from these processes and are used only as ground-truth labels for final evaluation.
 
 ---
 
@@ -111,7 +109,6 @@ The resulting scores are used to evaluate the predicted herb-target associations
 
 The overall workflow is:
 
-```text
 Zdataset
     │
     ▼
@@ -123,14 +120,17 @@ Construct herb-target prediction dataset
     ▼
 Cross-validation data splitting
     │
+    ├── Training herb-target associations
+    │
+    └── Held-out test herb-target associations
+    │
     ▼
 Construct training heterogeneous graph
     │
-    │
     ├── Herb-side relations
     ├── Target-side relations
-    └── Herb-target relations controlled by
-        `include_herb_target`
+    └── Training herb-target relations
+        controlled by `include_herb_target`
     │
     ▼
 HAN-based heterogeneous representation learning
@@ -145,10 +145,10 @@ Neural inductive matrix completion
 Herb-target association score matrix
     │
     ▼
+Compare predictions with held-out test associations
+    │
+    ▼
 Model evaluation
-```
-
-For each evaluation setting, the graph used for model training is constructed according to the corresponding training associations. Held-out herb-target associations are not used as herb-target graph edges during model training.
 
 
 ---
