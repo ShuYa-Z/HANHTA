@@ -54,6 +54,7 @@ def train(test_data, graph, train_data, train_mat, include_herb_target, args):
         model = IMCHAN(
             meta_paths=model_meta_paths,
             in_size=args.in_size,
+            herb_fd = args.herb_num,
             target_fd=args.target_num,
             hidden_size=args.hidden_units,
             out_size=args.out_size,
