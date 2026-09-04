@@ -1,4 +1,4 @@
-# HAN-HTA: Herb-Target Association Prediction Using a Heterogeneous Attention Network
+# HAN-HTA: Herb target prediction based on neural inductive matrix completion with heterogeneous graph network
 
 This repository provides the implementation and preprocessed data of **HAN-HTA**, a deep learning framework for herb-target association prediction in Traditional Chinese Medicine (TCM).
 
