@@ -28,7 +28,7 @@ The heterogeneous network contains **4,584 nodes and 200,750 edges**, including 
 | `herb_disease.csv` | Herb-disease associations |
 | `herb_TCMsymptom.csv` | Herb-TCM symptom associations |
 | `herb_symptom.csv` | Herb-symptom associations |
-| `target_drug.csv` | Target-drug associations |
+| `target_similarity.csv` | Target-target similarity |
 | `target_disease.csv` | Target-disease associations |
 | `target_symptom.csv` | Target-symptom associations |
 | `target_herb.csv` | Herb-target associations |
