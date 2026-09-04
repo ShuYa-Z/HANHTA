@@ -1,51 +1,26 @@
 # HAN-HTA: Herb-Target Association Prediction Using a Heterogeneous Attention Network
 
+This repository provides the implementation and preprocessed data of **HAN-HTA**, a deep learning framework for herb-target association prediction in Traditional Chinese Medicine (TCM).
+
+HAN-HTA combines a **heterogeneous graph attention network** with **neural inductive matrix completion** to learn herb and target representations from heterogeneous biomedical information and predict herb-target associations.
+
+> **Paper:** *Herb target prediction based on neural inductive matrix completion with heterogeneous graph network*
+
 ## Overview
 
-This repository provides the implementation of **HAN-HTA (Heterogeneous Attention Network for Herb-Target Association)** for herb-target association prediction in Traditional Chinese Medicine (TCM).
+The overall architecture of HAN-HTA is illustrated below.
 
-HAN-HTA integrates heterogeneous graph neural networks with neural inductive matrix completion to model complex relationships among herbs, targets, diseases, symptoms, drugs, and TCM symptoms. The heterogeneous attention mechanism is used to aggregate information along different meta-paths, and the learned herb and target representations are subsequently used for herb-target association prediction.
+<p align="center">
+  <img src="figures/figure1_overview.png" alt="Overview of HAN-HTA" width="900">
+</p>
 
-The code and dataset provided in this repository correspond to the experiments reported in the manuscript:
-
-> **Herb target prediction based on neural inductive matrix completion with heterogeneous graph network**
-
----
-
-## Repository Structure
-
-```text
-.
-├── data/ 
-│     ├── herb_herb.csv
-│     ├── herb_disease.csv
-│     ├── herb_TCMsymptom.csv
-│     ├── herb_symptom.csv
-│     ├── target_drug.csv
-│     ├── target_disease.csv
-│     ├── target_symptom.csv
-│     └── target_herb.csv
-│
-├── main.py
-├── model.py
-├── utils.py
-├── predict_new_target.py
-└── README.md
-```
-
-- `main.py`: Main training and evaluation script.
-- `model.py`: HAN-HTA model implementation.
-- `utils.py`: Dataset loading, heterogeneous graph construction, evaluation, and utility functions.
-- `predict_new_target.py`: Script for the new-target prediction experiment.
-- `dataset/Zdataset/`: Dataset used for herb-target association prediction.
-
----
+HAN-HTA performs intra-meta-path and inter-meta-path aggregation to obtain herb and target embeddings, followed by neural inductive matrix completion for herb-target association prediction.
 
 ## Dataset
 
-The Zdataset integrates heterogeneous information from publicly available TCM and biomedical databases.
+The **Zdataset** integrates heterogeneous information from multiple biomedical and TCM databases, including SymMap, ETCM, HERB, SIDER, and DrugBank.
 
-The following relationship matrices are used:
+The heterogeneous network contains **4,584 nodes and 200,750 edges**, including 318 herbs, 895 targets, and eight relationship types.
 
 | File | Relationship |
 |---|---|
@@ -58,109 +33,97 @@ The following relationship matrices are used:
 | `target_symptom.csv` | Target-symptom associations |
 | `target_herb.csv` | Herb-target associations |
 
-The integrated data were collected from publicly available resources, including:
-
-- SymMap
-- ETCM
-- HERB
-- SIDER
-- DrugBank
-
-Detailed information regarding data sources, preprocessing, and dataset construction is provided in the manuscript.
-
----
-
 ## Heterogeneous Graph Construction
 
-The heterogeneous graph contains multiple types of relationships on both the herb and target sides.
+The heterogeneous network integrates herb-, target-, disease-, symptom-, and TCM symptom-related information through multiple semantic relationships and meta-paths.
 
-For herb-target association prediction, the implementation provides a control parameter, `include_herb_target`, for heterogeneous graph construction.
+<p align="center">
+  <img src="figures/figure2_heterogeneous_network.png" alt="Heterogeneous herb-target network" width="850">
+</p>
 
-When `include_herb_target` is enabled, herb-target and target-herb relations are included in the heterogeneous graph through the corresponding `htg` and `gth` relations.
+## Training and Evaluation
 
-During each evaluation, training herb-target associations are included in the heterogeneous graph and used for node embedding. Held-out test herb-target associations are excluded from these processes and are used only as ground-truth labels for final evaluation.
+HAN-HTA is evaluated using **10-fold cross-validation**. In each fold, training herb-target associations are used for model learning, while held-out associations are reserved for evaluation.
 
----
+The model is evaluated using:
 
-## Model Architecture
+- AUROC
+- AUPRC
+- Accuracy
+- Precision
+- Recall
+- F1-score
 
-HAN-HTA consists of two main components:
+The implementation also supports new-target prediction for a given herb.
 
-### 1. Heterogeneous Attention Network
+## Results
 
-The heterogeneous attention network aggregates information from multiple relation types and meta-paths in the heterogeneous graph.
+HAN-HTA achieves the best performance among the compared methods on the Zdataset. The reported AUROC and AUPRC are **0.922** and **0.928**, respectively.
 
-The model performs:
+<p align="center">
+  <img src="figures/figure3_performance.png" alt="Performance comparison" width="900">
+</p>
 
-- intra-meta-path information aggregation;
-- inter-meta-path semantic aggregation;
-- attention-based representation learning for herbs and targets.
+For the given-herb prediction experiment, HAN-HTA achieves an average **AUROC of 0.889** and **AUPRC of 0.718**.
 
-### 2. Neural Inductive Matrix Completion
+<p align="center">
+  <img src="figures/figure4_given_herbs.png" alt="Prediction performance for given herbs" width="900">
+</p>
 
-The learned herb and target representations are combined to reconstruct the herb-target association score matrix.
+## Meta-path Integration and Loss Margin
 
-The resulting scores are used to evaluate the predicted herb-target associations.
+The contribution of different meta-path combinations and the effect of the loss margin parameter **α** are evaluated experimentally. The complete results are reported in the paper.
 
----
+The best performance is obtained with **α = 0.2**.
 
-## Training Pipeline
+## Case Studies
 
-The overall workflow is:
+HAN-HTA was further applied to candidate target prediction for **Artemisia annua (Qinghao)** and **Ginkgo biloba (Yinxing)**. The top-ranked candidate targets were further examined using literature evidence and pathway/GO enrichment analysis.
+
+<p align="center">
+  <img src="figures/figure5_case_study.png" alt="Case study of predicted targets" width="900">
+</p>
+
+## Repository Structure
 
 ```text
-Zdataset
-    │
-    ▼
-Load heterogeneous relationship matrices
-    │
-    ▼
-Construct herb-target prediction dataset
-    │
-    ▼
-Cross-validation data splitting
-    │
-    ├── Training herb-target associations
-    │
-    └── Held-out test herb-target associations
-    │
-    ▼
-Construct training heterogeneous graph
-    │
-    ├── Herb-side relations
-    ├── Target-side relations
-    └── Training herb-target relations
-        controlled by `include_herb_target`
-    │
-    ▼
-HAN-based heterogeneous representation learning
-    │
-    ▼
-Herb and target embeddings
-    │
-    ▼
-Neural inductive matrix completion
-    │
-    ▼
-Herb-target association score matrix
-    │
-    ▼
-Compare predictions with held-out test associations
-    │
-    ▼
-Model evaluation
+.
+├── dataset/
+│   └── Zdataset/
+├── figures/
+│   ├── figure1_overview.png
+│   ├── figure2_heterogeneous_network.png
+│   ├── figure3_performance.png
+│   ├── figure4_given_herbs.png
+│   └── figure5_case_study.png
+├── main.py
+├── model.py
+├── utils.py
+├── predict_new_target.py
+└── README.md
 ```
----
 
-## Baseline Methods
+## Usage
 
-The baseline methods were implemented following their original publications. To ensure a fair comparison, we retained the original model architectures, parameter settings, and training strategies without modification. Since the original implementations were designed for drug-target prediction, the drug-target association data were replaced with the herb-target association dataset used in this study.
+### Train HAN-HTA
 
----
+```bash
+python main.py
+```
+
+### New-target prediction
+
+```bash
+python predict_new_target.py
+```
+
+Dataset paths and experimental parameters can be configured in the corresponding scripts.
+
+## Baselines
+
+The baseline methods were implemented according to their original publications. Their original architectures and parameter settings were retained, with the input data adapted to the herb-target prediction task using the Zdataset.
 
 ## Requirements
-
-The implementation uses the following major Python packages:
 
 - Python
 - PyTorch
@@ -170,98 +133,12 @@ The implementation uses the following major Python packages:
 - SciPy
 - scikit-learn
 
-The package versions should correspond to the computational environment used to run the experiments.
-
----
-
-## Usage
-
-### 1. Prepare the dataset
-
-Place the Zdataset files under:
-
-```text
-dataset/Zdataset/
-```
-
-The directory should contain:
-
-```text
-herb_herb.csv
-herb_disease.csv
-herb_TCMsymptom.csv
-herb_symptom.csv
-target_drug.csv
-target_disease.csv
-target_symptom.csv
-target_herb.csv
-```
-
-### 2. Train HAN-HTA
-
-Run:
-
-```bash
-python main.py
-```
-
-The training script loads the Zdataset, constructs the heterogeneous graph, performs the specified cross-validation procedure, trains the HAN-HTA model, and evaluates the predicted herb-target associations.
-
-Model and training parameters can be configured through the arguments defined in `main.py`.
-
-### 3. New-target prediction
-
-The repository also provides:
-
-```bash
-python predict_new_target.py
-```
-
-for the new-target prediction experiment.
-
-The corresponding dataset path and experimental parameters are defined in the script.
-
----
-
-## Evaluation Metrics
-
-The implementation evaluates herb-target association prediction using:
-
-- AUROC
-- AUPR
-- Accuracy
-- Precision
-- Recall
-- F1-score
-
-The generated evaluation results are saved by the corresponding training scripts.
-
----
-
-## Reproducibility
-
-This repository provides the dataset and source code used for the experiments to facilitate reproducibility.
-
-To reproduce the experiments:
-
-1. Download or use the provided Zdataset.
-2. Place the dataset files in `dataset/Zdataset/`.
-3. Install the required Python dependencies.
-4. Check the dataset path and model parameters in the corresponding scripts.
-5. Run `main.py` for herb-target association prediction.
-6. Run `predict_new_target.py` for the new-target prediction experiment.
-
-The detailed experimental settings and methodology are described in the manuscript.
-
----
-
 ## Citation
 
-If you use this implementation or dataset in your research, please cite:
+If you use this code or dataset, please cite:
 
-
----
+> *Herb target prediction based on neural inductive matrix completion with heterogeneous graph network.*
 
 ## Contact
 
-For questions regarding the implementation, dataset, or experiments, please contact the corresponding author.
+For questions regarding the implementation or dataset, please contact the corresponding author.
