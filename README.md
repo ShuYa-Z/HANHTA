@@ -70,11 +70,6 @@ For the given-herb prediction experiment, HAN-HTA achieves an average **AUROC of
   <img src="figures/figure4_given_herbs.png" alt="Prediction performance for given herbs" width="900">
 </p>
 
-## Meta-path Integration and Loss Margin
-
-The contribution of different meta-path combinations and the effect of the loss margin parameter **α** are evaluated experimentally. The complete results are reported in the paper.
-
-The best performance is obtained with **α = 0.2**.
 
 ## Case Studies
 
